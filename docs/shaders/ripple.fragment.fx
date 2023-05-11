@@ -6,11 +6,27 @@ in vec2 model_uv;
 
 // Uniforms
 uniform sampler2D image;
+uniform float time;
 
 // Output
 out vec4 FragColor;
 
 void main() {
-    // Color
-    FragColor = texture(image, model_uv);
+    // Scale and translate texture coordinate to [-1,1] range
+    vec2 texCoord = model_uv * 2.0 - 1.0;
+
+    // Calculate radius
+    float radius = length(texCoord);
+
+    // Calculate texture coordinate offset
+    vec2 offset = texCoord * (sin(radius * 30.0 - time * 5.0) + 0.5) / 60.0;
+
+    // Calculate final texture coordinate
+    vec2 finalTexCoord = model_uv + offset;
+
+    // Get color from original texture using final texture coordinate
+    vec4 color = texture(image, finalTexCoord);
+
+    // Output color
+    FragColor = color;
 }
